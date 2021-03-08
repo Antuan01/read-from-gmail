@@ -6,18 +6,9 @@ require "fileutils"
 OOB_URI = "urn:ietf:wg:oauth:2.0:oob".freeze
 APPLICATION_NAME = "Gmail API Ruby Quickstart".freeze
 CREDENTIALS_PATH = "credentials.json".freeze
-# The file token.yaml stores the user's access and refresh tokens, and is
-# created automatically when the authorization flow completes for the first
-# time.
 TOKEN_PATH = "token.yaml".freeze
 SCOPE = Google::Apis::GmailV1::AUTH_GMAIL_READONLY
 
-##
-# Ensure valid credentials, either by restoring from the saved credentials
-# files or intitiating an OAuth2 authorization. If authorization is required,
-# the user's default browser will be launched to approve the request.
-#
-# @return [Google::Auth::UserRefreshCredentials] OAuth2 credentials
 def authorize
   client_id = Google::Auth::ClientId.from_file CREDENTIALS_PATH
   token_store = Google::Auth::Stores::FileTokenStore.new file: TOKEN_PATH
@@ -36,12 +27,10 @@ def authorize
   credentials
 end
 
-# Initialize the API
 service = Google::Apis::GmailV1::GmailService.new
 service.client_options.application_name = APPLICATION_NAME
 service.authorization = authorize
 
-# Show the user's labels
 user_id = "me"
 result = service.list_user_labels user_id
 puts "Labels:"
@@ -56,6 +45,6 @@ mails.messages.each { |msg| puts "- #{msg.id} "}
 
 for msg in mails.messages do
   email = service.get_user_message("me", msg.id)
-  puts email.to_json
+  puts email.payload.parts[0].body.data
 end
 
