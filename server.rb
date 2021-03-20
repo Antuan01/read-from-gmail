@@ -1,7 +1,7 @@
 require 'sinatra'
 require 'json'
 
-get '/' do
+get '/check' do
   content_type :json
   { response: "Hola Bebe" }.to_json
 end
