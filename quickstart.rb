@@ -4,6 +4,7 @@ require "googleauth/stores/file_token_store"
 require "fileutils"
 require "json"
 require "base64"
+load "tg.rb"
 
 OOB_URI = "urn:ietf:wg:oauth:2.0:oob".freeze
 APPLICATION_NAME = "Gmail API Ruby Quickstart".freeze
@@ -88,8 +89,15 @@ for msg in mails.messages do
 
     uuid = decode.match(/[0-9a-z]+\-[0-9a-z]+\-[0-9a-z]+\-[0-9a-z]+\-[0-9a-z]+/)
     
-    if name && date && amount && code
+    if name && date && amount && code && uuid
+
       puts " #{name} #{date} #{amount} #{code} #{uuid}"
+      
+      text = " Nuevo pago de: #{name} hoy: #{date} por: #{amount} codigo de confirmacion: #{code} compra: #{uuid} "
+
+      notify("229728941" ,text)
+      #notify("229728941" ,text)
+      
     end
   #end
 
