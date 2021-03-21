@@ -2,6 +2,7 @@ require "google/apis/gmail_v1"
 require "googleauth"
 require "googleauth/stores/file_token_store"
 require "fileutils"
+require "json"
 
 OOB_URI = "urn:ietf:wg:oauth:2.0:oob".freeze
 APPLICATION_NAME = "Gmail API Ruby Quickstart".freeze
@@ -56,6 +57,8 @@ mails.messages.each { |msg| puts "- #{msg.id} "}
 
 for msg in mails.messages do
   email = service.get_user_message("me", msg.id)
-  puts email.to_json
+  data = JSON.parse(email.to_json)
+  puts data["payload"]["parts"]
+  puts "------------------------------"
 end
 
