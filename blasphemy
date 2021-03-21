@@ -1,0 +1,1 @@
+Docker run --port 127.0.0.1:3306:3306  --name mariadb -e MYSQL_ROOT_PASSWORD=nautna -e MYSQL_DATABASE=atpay -e MYSQL_USER=antuan -e MYSQL_PASSWORD=nautna 
