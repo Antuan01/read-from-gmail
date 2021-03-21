@@ -46,22 +46,37 @@ service.authorization = authorize
 # Show the user's labels
 user_id = "me"
 result = service.list_user_labels user_id
-puts "Labels:"
-puts "No labels found" if result.labels.empty?
-result.labels.each { |label| puts "- #{label.name}" }
+#puts "Labels:"
+#puts "No labels found" if result.labels.empty?
+#result.labels.each { |label| puts "- #{label.name}" }
 
 labels_ids = ["UNREAD"]
 
 mails = service.list_user_messages "me" ["UNREAD"]
 
-mails.messages.each { |msg| puts "- #{msg.id} "}
+#mails.messages.each { |msg| puts "- #{msg.id} "}
 
 for msg in mails.messages do
   email = service.get_user_message("me", msg.id)
   data = JSON.parse(email.to_json)
 
-  for part in data["payload"]["parts"]
-    decode = Base64.urlsafe_decode64(part["body"]["data"])
+  #partes = data["payload"]["parts"]
+
+  #partes = partes.sort_by! { | el | el["body"]["size"] }
+
+  #partesjson =  JSON.parse(partes.to_json)
+
+  #for asdf in partesjson
+  #  puts asdf["body"]["size"]
+  #end
+
+  #for part in data["payload"]["parts"]
+
+    #puts part["body"]["data"]
+
+    decode = Base64.urlsafe_decode64(data["payload"]["parts"][0]["body"]["data"])
+
+    #p part["body"]["size"]
 
     name = decode.match(/([A-Z]+\s[A-Z]+\s[A-Z]+\s[A-Z]{0,})/)
 
@@ -70,14 +85,14 @@ for msg in mails.messages do
     amount = decode.match(/\$(\d+)\.(\d+)/)
 
     code =  decode.match(/([0-9A-Z]){8,}/)
+
+    uuid = decode.match(/[0-9a-z]+\-[0-9a-z]+\-[0-9a-z]+\-[0-9a-z]+\-[0-9a-z]+/)
     
     if name && date && amount && code
-      puts "es stling"
-      puts " #{name} #{date} #{amount} #{code} "
+      puts " #{name} #{date} #{amount} #{code} #{uuid}"
     end
-  end
+  #end
 
-  #data["payload"]["parts"].each { |print| puts Base64.urlsafe_decode64(print["body"]["data"]) }
-  puts "------------------------------"
+  #puts "------------------------------"
 end
 
