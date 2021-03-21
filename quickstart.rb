@@ -3,6 +3,7 @@ require "googleauth"
 require "googleauth/stores/file_token_store"
 require "fileutils"
 require "json"
+require "base64"
 
 OOB_URI = "urn:ietf:wg:oauth:2.0:oob".freeze
 APPLICATION_NAME = "Gmail API Ruby Quickstart".freeze
@@ -58,7 +59,25 @@ mails.messages.each { |msg| puts "- #{msg.id} "}
 for msg in mails.messages do
   email = service.get_user_message("me", msg.id)
   data = JSON.parse(email.to_json)
-  puts data["payload"]["parts"]
+
+  for part in data["payload"]["parts"]
+    decode = Base64.urlsafe_decode64(part["body"]["data"])
+
+    name = decode.match(/([A-Z]+\s[A-Z]+\s[A-Z]+\s[A-Z]{0,})/)
+
+    date =  decode.match(/(\d)+\/(\d)+\/(\d)+/)
+
+    amount = decode.match(/\$(\d+)\.(\d+)/)
+
+    code =  decode.match(/([0-9A-Z]){8,}/)
+    
+    if name && date && amount && code
+      puts "es stling"
+      puts " #{name} #{date} #{amount} #{code} "
+    end
+  end
+
+  #data["payload"]["parts"].each { |print| puts Base64.urlsafe_decode64(print["body"]["data"]) }
   puts "------------------------------"
 end
 
