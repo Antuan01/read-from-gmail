@@ -2,6 +2,10 @@ require "google/apis/gmail_v1"
 require "googleauth"
 require "googleauth/stores/file_token_store"
 require "fileutils"
+load "tg.rb"
+require "json"
+require "base64"
+
 
 OOB_URI = "urn:ietf:wg:oauth:2.0:oob".freeze
 APPLICATION_NAME = "Gmail API Ruby Quickstart".freeze
@@ -27,24 +31,38 @@ def authorize
   credentials
 end
 
-service = Google::Apis::GmailV1::GmailService.new
-service.client_options.application_name = APPLICATION_NAME
-service.authorization = authorize
+def check_mail
+  service = Google::Apis::GmailV1::GmailService.new
+  service.client_options.application_name = APPLICATION_NAME
+  service.authorization = authorize
 
-user_id = "me"
-result = service.list_user_labels user_id
-puts "Labels:"
-puts "No labels found" if result.labels.empty?
-result.labels.each { |label| puts "- #{label.name}" }
+  user_id = "me"
+  mails = service.list_user_messages "me" ["UNREAD"]
+  for msg in mails.messages do
+    email = service.get_user_message("me", msg.id)
+    data = JSON.parse(email.to_json)
+    decode = Base64.urlsafe_decode64(data["payload"]["parts"][0]["body"]["data"])
+    name = decode.match(/([A-Z]+\s[A-Z]+\s[A-Z]+\s[A-Z]{0,})/)
 
-labels_ids = ["UNREAD"]
+    date =  decode.match(/(\d)+\/(\d)+\/(\d)+/)
 
-mails = service.list_user_messages "me" ["UNREAD"]
+    amount = decode.match(/\$(\d+)\.(\d+)/)
 
-mails.messages.each { |msg| puts "- #{msg.id} "}
+    code =  decode.match(/([0-9A-Z]){8,}/)
 
-for msg in mails.messages do
-  email = service.get_user_message("me", msg.id)
-  puts email.payload.parts[0].body.data
+    uuid = decode.match(/[0-9a-z]+\-[0-9a-z]+\-[0-9a-z]+\-[0-9a-z]+\-[0-9a-z]+/)
+    
+    if name && date && amount && code && uuid
+
+      puts " #{name} #{date} #{amount} #{code} #{uuid}"
+      
+      text = " Nuevo pago de: #{name} hoy: #{date} por: #{amount} codigo de confirmacion: #{code} compra: #{uuid} "
+
+      notify("229728941" ,text)
+      #notify("229728941" ,text)
+      
+    end
+
+  end
+
 end
-

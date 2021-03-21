@@ -3,9 +3,10 @@ require 'json'
 #load "operations.rb"
 #include Opt
 load "class.rb"
-
+load "payload.rb"
 
 get '/check' do
+  check_mail()
   content_type :json
   { response: "Hola Bebe" }.to_json
 end
