@@ -56,10 +56,10 @@ def check_mail
 
       puts " #{name} #{date} #{amount} #{code} #{uuid}"
       
-      text = " Nuevo pago de: #{name} hoy: #{date} por: #{amount} codigo de confirmacion: #{code} compra: #{uuid} "
+      text = " Nuevo pago de: #{name} Fecha: #{date} por: #{amount} codigo de confirmacion: #{code} compra: #{uuid} "
 
       notify("229728941" ,text)
-      #notify("229728941" ,text)
+      notify("199466501" ,text)
 
     end
 
