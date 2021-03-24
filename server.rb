@@ -1,7 +1,9 @@
 require 'sinatra'
 require 'json'
+
 #load "operations.rb"
 #include Opt
+
 load "class.rb"
 load "payload.rb"
 

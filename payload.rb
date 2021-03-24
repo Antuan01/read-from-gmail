@@ -60,7 +60,7 @@ def check_mail
 
       notify("229728941" ,text)
       #notify("229728941" ,text)
-      
+
     end
 
   end
